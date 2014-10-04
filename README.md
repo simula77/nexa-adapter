@@ -20,3 +20,4 @@ onSocketMessage = (s) ->
     else
       <normal processing>
 ```
+* Configure Nexa dimmers and on/off switches through the Houm.io ui give the group address so that it contains the string "nexa" and ends in a forward slash followed be the device id given in tellstick.conf e.g. *my-nexa-dimmer/7*
