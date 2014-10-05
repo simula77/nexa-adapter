@@ -8,16 +8,16 @@ A hack to introduce support for Nexa hardware to Houm.io. Can be integrated to e
 * Install a TellStick and the [Telldus software](http://elinux.org/R-Pi_Tellstick_core) on Houm.io unit
 * [Configure your Nexa hardware in /etc/tellstick.conf](http://developer.telldus.com/wiki/TellStick_conf)
 * Clone this repo to Houm.io unit
-* Edit existing CoffeeScript code and add something like the following to relevant places (added lines marked with an asterisk):
+* Edit existing CoffeeScript code and add something like the following to relevant places:
 ```
-*nexa = require('./nexa-adapter')
+nexa = require('./nexa-adapter') // <-- added
 ...
 onSocketMessage = (s) ->
   console.log "Received message:", s
   try
     message = JSON.parse s
-*   if nexa.isRelevant message*
-*     nexa.handleMessage message*
+    if nexa.isRelevant message // <-- added
+      nexa.handleMessage message // <-- added
     else
       <normal processing>
 ```
