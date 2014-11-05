@@ -16,8 +16,8 @@ var devices = telldus.getDevicesSync(function(err, devices) {
                    return JSON.stringify(devices);
                  }
                });
-var houmioServer = process.env.HORSELIGHTS_SERVER || "ws://localhost:3000";
-var houmioSitekey = process.env.HORSELIGHTS_SITEKEY || "devsite";
+var houmioServer = process.env.HORSELIGHTS_SERVER || "wss://houm.herokuapp.com";
+var houmioSitekey = process.env.HORSELIGHTS_SITEKEY || "";
 var VENDOR = "nexa";
 var socket = new WebSocket(houmioServer);
 
@@ -28,10 +28,7 @@ ws.on('open', function() {
 
 ws.on('message', function(msg) {
   logger.debug('received message %s', msg);
-  message = JSON.parse(msg);
-  if (message.command === 'set') {
-    handleMessage(message);
-  }
+  handleMessage(JSON.parse(msg));
 })
 
 function isDimmer(deviceId) {
