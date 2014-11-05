@@ -1,11 +1,13 @@
 {
   "name": "nexa-adapter",
-  "version": "0.0.1",
+  "version": "0.5",
   "author": "Samuli Karjula",
   "private": false,
   "main": "adapter.js",
   "dependencies": {
 	"lodash": "^2.4.1",
+	"winston": "0.8.0",
+	"ws": "0.4.32",
 	"telldus": "0.0.9"
   }
 }

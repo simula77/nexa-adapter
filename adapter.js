@@ -1,17 +1,38 @@
 var telldus = require('telldus');
 var _ = require('lodash');
+var ws = require('ws');
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'logs/nexa-bridge.log', level: conf.logLevel })
+    ]
+  });
 var devices = telldus.getDevicesSync(function(err, devices) {
                 if ( err ) {
-                   console.log('Failed to read devices from TellStick!', err);
+                   logger.error('Failed to read devices from TellStick!', err);
                    process.exit(1);
                  } else {
                    return JSON.stringify(devices);
                  }
                });
+var houmioServer = process.env.HORSELIGHTS_SERVER || "ws://localhost:3000";
+var houmioSitekey = process.env.HORSELIGHTS_SITEKEY || "devsite";
+var VENDOR = "nexa";
+var socket = new WebSocket(houmioServer);
 
-var isRelevant = function(message) {
-  return message.data.groupaddress.indexOf("nexa") >= 0;
-};
+ws.on('open', function() {
+  ws.send(JSON.stringify({ command: "publish", data: { sitekey: houmioSitekey, vendor: VENDOR } }));
+  logger.info('Connected to ' + houmioServer);
+});
+
+ws.on('message', function(msg) {
+  logger.debug('received message %s', msg);
+  message = JSON.parse(msg);
+  if (message.command === 'set') {
+    handleMessage(message);
+  }
+})
 
 function isDimmer(deviceId) {
   return _.some(devices, function(device) {
@@ -36,5 +57,17 @@ var handleMessage = function(message) {
   }
 };
 
-exports.isRelevant = isRelevant;
-exports.handleMessage = handleMessage;
+ws.on('ping', function(ping) {
+  logger.debug('ping received');
+  ws.pong();
+});
+
+ws.on('error', function(error) {
+  logger.info('Error received: %s -> exiting', error);
+  process.exit(1);
+});
+
+ws.on('close', function() {
+  logger.info('Connection closed -> exiting');
+  process.exit(1);
+});
