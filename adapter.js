@@ -15,12 +15,15 @@ module.exports = function(server, sitekey, logger) {
 
   ws.on("open", function() {
     ws.send(JSON.stringify({ command: "publish", data: { sitekey: sitekey, vendor: "nexa" } }));
-    logger.info("Connected to " + server);
+    logger.info("Connected to " + server + " for NEXA messages");
   });
 
   ws.on("message", function(msg) {
     logger.debug("received message %s", msg);
-    handleMessage(JSON.parse(msg));
+    var message = JSON.parse(msg);
+    if (message.command === "generallightdata") {
+      handleMessage(message);
+    }
   });
 
   function isDimmer(deviceId) {
