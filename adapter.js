@@ -19,7 +19,7 @@ module.exports = function(server, sitekey, logger) {
   });
 
   ws.on("message", function(msg) {
-    logger.debug("received message %s", msg);
+    logger.info("received NEXA message %s", msg);
     var message = JSON.parse(msg);
     if (message.command === "generallightdata") {
       handleMessage(message);
@@ -44,9 +44,9 @@ module.exports = function(server, sitekey, logger) {
       logger.info("setting dim level to: " + value);
       telldus.dimSync(deviceId, value);
     } else if (value === 0) {
-      telldus.turnOffSync(deviceId);
+      telldus.turnOff(deviceId);
     } else {
-      telldus.turnOnSync(deviceId);
+      telldus.turnOn(deviceId);
     }
   }
 
